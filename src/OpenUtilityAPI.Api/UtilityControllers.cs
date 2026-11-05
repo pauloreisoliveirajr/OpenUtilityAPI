@@ -13,11 +13,13 @@ public sealed class ConvertersController : UtilityController
 {
     /// <summary>Convert between supported length, mass or temperature units.</summary>
     [HttpPost("units")]
+    [ProducesResponseType<UnitConversion>(StatusCodes.Status200OK)]
     public ActionResult<UnitConversion> Units(UnitRequest request) =>
         Calculate(() => UnitConverter.Convert(request.Value, request.FromUnit, request.ToUnit, request.DecimalPlaces));
 
     /// <summary>Spell out an integer in pt-BR or en-US.</summary>
     [HttpPost("number-to-words")]
+    [ProducesResponseType<NumberWordsResponse>(StatusCodes.Status200OK)]
     public ActionResult<NumberWordsResponse> Words(NumberWordsRequest request) =>
         Calculate(() => new NumberWordsResponse(request.Number, request.Culture,
             NumberWords.Convert(request.Number, request.Culture)));
@@ -30,11 +32,13 @@ public sealed class DatesController : UtilityController
 {
     /// <summary>Return the signed number of calendar days from start to end.</summary>
     [HttpPost("difference")]
+    [ProducesResponseType<DateDifference>(StatusCodes.Status200OK)]
     public ActionResult<DateDifference> Difference(DateDifferenceRequest request) =>
         new DateDifference(request.Start, request.End, CalendarUtilities.Difference(request.Start, request.End));
 
     /// <summary>Move by business days, excluding the start, weekends and supplied holidays.</summary>
     [HttpPost("add-business-days")]
+    [ProducesResponseType<BusinessDaysResponse>(StatusCodes.Status200OK)]
     public ActionResult<BusinessDaysResponse> Add(BusinessDaysRequest request, CancellationToken cancellationToken) =>
         Calculate(() => new BusinessDaysResponse(request.Start, request.Days,
             CalendarUtilities.AddBusinessDays(request.Start, request.Days, request.Holidays, cancellationToken)));
@@ -47,12 +51,14 @@ public sealed class TextController : UtilityController
 {
     /// <summary>Apply selected whitespace, accent and case transformations.</summary>
     [HttpPost("normalize")]
+    [ProducesResponseType<NormalizedText>(StatusCodes.Status200OK)]
     public ActionResult<NormalizedText> Normalize(TextRequest request) =>
         Calculate(() => new NormalizedText(TextUtilities.Normalize(request.Text, request.Trim,
             request.CollapseWhitespace, request.RemoveAccents, request.LetterCase)));
 
     /// <summary>Check ASCII email syntax without performing network lookups.</summary>
     [HttpPost("email/validate")]
+    [ProducesResponseType<EmailValidation>(StatusCodes.Status200OK)]
     public ActionResult<EmailValidation> Email(EmailRequest request)
     {
         var valid = TextUtilities.IsEmailSyntaxValid(request.Value);

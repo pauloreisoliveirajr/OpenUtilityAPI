@@ -13,21 +13,25 @@ public sealed class FinanceController : UtilityController
 {
     /// <summary>Calculate simple interest at a fractional rate per period.</summary>
     [HttpPost("simple-interest")]
+    [ProducesResponseType<InterestResult>(StatusCodes.Status200OK)]
     public ActionResult<InterestResult> Simple(FinanceRequest request) =>
         Calculate(() => Finance.Interest(request.Principal, request.RatePerPeriod, request.Periods, request.DecimalPlaces, false));
 
     /// <summary>Calculate compound interest at a fractional rate per period.</summary>
     [HttpPost("compound-interest")]
+    [ProducesResponseType<InterestResult>(StatusCodes.Status200OK)]
     public ActionResult<InterestResult> Compound(FinanceRequest request) =>
         Calculate(() => Finance.Interest(request.Principal, request.RatePerPeriod, request.Periods, request.DecimalPlaces, true));
 
     /// <summary>Simulate a Price amortization schedule.</summary>
     [HttpPost("price")]
+    [ProducesResponseType<LoanResult>(StatusCodes.Status200OK)]
     public ActionResult<LoanResult> Price(FinanceRequest request) =>
         Calculate(() => Finance.Loan(request.Principal, request.RatePerPeriod, request.Periods, request.DecimalPlaces, true));
 
     /// <summary>Simulate a constant-amortization (SAC) schedule.</summary>
     [HttpPost("sac")]
+    [ProducesResponseType<LoanResult>(StatusCodes.Status200OK)]
     public ActionResult<LoanResult> Sac(FinanceRequest request) =>
         Calculate(() => Finance.Loan(request.Principal, request.RatePerPeriod, request.Periods, request.DecimalPlaces, false));
 }
@@ -39,6 +43,7 @@ public sealed class MathController : UtilityController
 {
     /// <summary>Calculate percentOf, ratioPercent or changePercent.</summary>
     [HttpPost("percentage")]
+    [ProducesResponseType<PercentageResult>(StatusCodes.Status200OK)]
     public ActionResult<PercentageResult> Percentage(PercentageRequest request) =>
         Calculate(() => Finance.Percentage(request.Operation, request.Value, request.Operand, request.DecimalPlaces));
 }

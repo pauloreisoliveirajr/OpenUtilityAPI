@@ -1,4 +1,5 @@
 using System.Threading.RateLimiting;
+using OpenUtilityAPI.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.ConfigureKestrel(options => options.Limits.MaxRequestBodySize = 65536);
@@ -7,7 +8,10 @@ builder.Services.AddControllers();
 builder.Services.AddHealthChecks();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
-    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "OpenUtilityAPI.Api.xml")));
+{
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "OpenUtilityAPI.Api.xml"));
+    options.SchemaFilter<RecordRequestSchemaFilter>();
+});
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
     policy.WithOrigins(builder.Configuration.GetSection("Cors:Origins").Get<string[]>() ?? [])
         .WithMethods("GET", "POST").WithHeaders("Content-Type")));

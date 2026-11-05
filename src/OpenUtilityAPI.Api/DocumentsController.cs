@@ -16,18 +16,22 @@ public sealed class DocumentsController : ControllerBase
 {
     /// <summary>Validate CPF syntax and check digits.</summary>
     [HttpPost("cpf/validate")]
+    [ProducesResponseType<DocumentValidation>(StatusCodes.Status200OK)]
     public ActionResult<DocumentValidation> Cpf(DocumentRequest request) => Validate("cpf", request);
 
     /// <summary>Validate numeric or alphanumeric CNPJ syntax and check digits.</summary>
     [HttpPost("cnpj/validate")]
+    [ProducesResponseType<DocumentValidation>(StatusCodes.Status200OK)]
     public ActionResult<DocumentValidation> Cnpj(DocumentRequest request) => Validate("cnpj", request);
 
     /// <summary>Validate PIS/PASEP syntax and check digit.</summary>
     [HttpPost("pis/validate")]
+    [ProducesResponseType<DocumentValidation>(StatusCodes.Status200OK)]
     public ActionResult<DocumentValidation> Pis(DocumentRequest request) => Validate("pis", request);
 
     /// <summary>Apply the standard CPF or CNPJ mask while preserving leading zeroes.</summary>
     [HttpPost("format")]
+    [ProducesResponseType<FormattedDocument>(StatusCodes.Status200OK)]
     public ActionResult<FormattedDocument> Format(FormatDocumentRequest request)
     {
         var formatted = Documents.Format(request.Type, request.Value);
