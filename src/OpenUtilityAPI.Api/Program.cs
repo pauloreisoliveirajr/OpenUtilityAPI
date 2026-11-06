@@ -8,6 +8,13 @@ builder.WebHost.ConfigureKestrel(options => options.Limits.MaxRequestBodySize = 
 builder.Services.AddProblemDetails();
 builder.Services.AddControllers();
 builder.Services.AddHealthChecks();
+builder.Services.AddSingleton<BankDirectoryCache>();
+builder.Services.AddHttpClient<IBankLookup, BrasilApiBankLookup>(client =>
+{
+    client.BaseAddress = new Uri("https://brasilapi.com.br/");
+    client.Timeout = TimeSpan.FromSeconds(5);
+    client.MaxResponseContentBufferSize = 2097152;
+}).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false });
 builder.Services.AddSingleton<LocalityCache>();
 builder.Services.AddHttpClient<ILocalityLookup, IbgeLocalityLookup>(client =>
 {

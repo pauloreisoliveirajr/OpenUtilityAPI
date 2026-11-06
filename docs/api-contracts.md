@@ -89,3 +89,35 @@ Example municipality response:
   { "id": 5300108, "name": "Brasília", "state": "DF" }
 ]
 ```
+
+## Bank directory (v0.2 development)
+
+GET /api/v1/br/banks returns an array of bank and financial institution records containing ispb (eight ASCII digits, including leading zeros), code (numeric COMPE code or null), name and fullName. The list is sorted by name using pt-BR collation, with ISPB as a tie breaker.
+
+GET /api/v1/br/banks/{code} finds an institution by COMPE code. Accept one to three ASCII digits representing 1 through 999. For example, 1 and 001 identify the same code. Code zero, signs, whitespace, Unicode digits and longer inputs return 400 before any provider call. Unknown valid codes return 404.
+
+The default adapter uses the [BrasilAPI bank directory](https://brasilapi.com.br/docs#tag/BANKS). The source includes institutions with no COMPE code and may represent those using null or zero. Both forms are returned as code: null. Institutions without a COMPE code remain available in the directory. This API exposes directory information only.
+
+Both routes use one immutable directory snapshot cached for 24 hours in process. The snapshot contains at most 1000 records. It is cleared on restart and independent across instances. Provider failures are not cached. Missing bank codes are resolved against that snapshot without extra upstream calls.
+
+The client uses a five-second HTTP timeout, a 2 MiB response buffer limit and redirects disabled. Concurrent cache misses share one outbound slot with a maximum five-second wait. No automatic retries are performed. Existing API rate limits apply.
+
+Provider HTTP failures, empty or malformed responses, invalid identifiers, duplicate ISPB identifiers and ambiguous positive COMPE codes return 502. Provider timeouts and a busy lookup queue return 504. Errors use generic Problem Details and request cancellation propagates to the provider.
+
+Example requests:
+
+```sh
+curl http://localhost:5146/api/v1/br/banks
+curl http://localhost:5146/api/v1/br/banks/001
+```
+
+Example response for a code lookup:
+
+```json
+{
+  "ispb": "00000000",
+  "code": 1,
+  "name": "BCO DO BRASIL S.A.",
+  "fullName": "Banco do Brasil S.A."
+}
+```
