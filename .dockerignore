@@ -1,0 +1,7 @@
+.git
+.sdk
+.vs
+**/bin
+**/obj
+TestResults
+artifacts
