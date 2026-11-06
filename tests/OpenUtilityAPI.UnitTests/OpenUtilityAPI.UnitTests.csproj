@@ -21,6 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\OpenUtilityAPI.Core\OpenUtilityAPI.Core.csproj" />
     <ProjectReference Include="..\..\src\OpenUtilityAPI.Brazil\OpenUtilityAPI.Brazil.csproj" />
+    <ProjectReference Include="..\..\src\OpenUtilityAPI.Infrastructure\OpenUtilityAPI.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

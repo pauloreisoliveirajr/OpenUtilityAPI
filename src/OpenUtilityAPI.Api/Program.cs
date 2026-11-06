@@ -1,11 +1,41 @@
 using System.Threading.RateLimiting;
 using OpenUtilityAPI.Api;
+using OpenUtilityAPI.Brazil;
+using OpenUtilityAPI.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.ConfigureKestrel(options => options.Limits.MaxRequestBodySize = 65536);
 builder.Services.AddProblemDetails();
 builder.Services.AddControllers();
 builder.Services.AddHealthChecks();
+builder.Services.AddSingleton<IndicatorCache>();
+builder.Services.AddHttpClient<IIndicatorLookup, BcbIndicatorLookup>(client =>
+{
+    client.BaseAddress = new Uri("https://api.bcb.gov.br/");
+    client.Timeout = TimeSpan.FromSeconds(5);
+    client.MaxResponseContentBufferSize = 32768;
+}).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false });
+builder.Services.AddSingleton<BankDirectoryCache>();
+builder.Services.AddHttpClient<IBankLookup, BrasilApiBankLookup>(client =>
+{
+    client.BaseAddress = new Uri("https://brasilapi.com.br/");
+    client.Timeout = TimeSpan.FromSeconds(5);
+    client.MaxResponseContentBufferSize = 2097152;
+}).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false });
+builder.Services.AddSingleton<LocalityCache>();
+builder.Services.AddHttpClient<ILocalityLookup, IbgeLocalityLookup>(client =>
+{
+    client.BaseAddress = new Uri("https://servicodados.ibge.gov.br/");
+    client.Timeout = TimeSpan.FromSeconds(5);
+    client.MaxResponseContentBufferSize = 2097152;
+}).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false });
+builder.Services.AddSingleton<PostalAddressCache>();
+builder.Services.AddHttpClient<IPostalAddressLookup, ViaCepAddressLookup>(client =>
+{
+    client.BaseAddress = new Uri("https://viacep.com.br/");
+    client.Timeout = TimeSpan.FromSeconds(5);
+    client.MaxResponseContentBufferSize = 32768;
+}).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -45,13 +75,15 @@ app.UseExceptionHandler(new ExceptionHandlerOptions
         : StatusCodes.Status500InternalServerError
 });
 app.UseStatusCodePages();
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Homologation"))
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 app.UseCors();
 app.UseRateLimiter();
+app.UseDefaultFiles();
+app.UseStaticFiles();
 app.MapHealthChecks("/health");
 app.MapControllers();
 app.Run();

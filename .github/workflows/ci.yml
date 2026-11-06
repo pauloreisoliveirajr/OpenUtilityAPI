@@ -13,6 +13,10 @@ jobs:
       - run: dotnet restore
       - run: dotnet build --configuration Release --no-restore
       - run: dotnet test --configuration Release --no-build
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: node --test tests/OpenUtilityAPI.WebTests/*.test.mjs
       - name: Build local NuGet packages
         run: |
           dotnet pack src/OpenUtilityAPI.Core -c Release --no-build -o artifacts/packages
@@ -25,6 +29,11 @@ jobs:
           docker run -d --name openutilityapi-ci -p 127.0.0.1:8080:8080 openutilityapi:ci
           trap 'docker logs openutilityapi-ci; docker rm -f openutilityapi-ci' EXIT
           curl --fail --retry 20 --retry-delay 1 --retry-all-errors --max-time 5 http://localhost:8080/health
+          curl --fail http://localhost:8080/ > /tmp/playground.html
+          grep -q '<html lang="pt-BR">' /tmp/playground.html
+          for asset in playground.js tools.js requests.js language.js playground.css; do
+            curl --fail --output /dev/null "http://localhost:8080/$asset"
+          done
           test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/swagger/index.html)" = 404
           curl --fail -H 'Content-Type: application/json' \
             --data '{"principal":1000,"ratePerPeriod":0.01,"periods":12}' \
