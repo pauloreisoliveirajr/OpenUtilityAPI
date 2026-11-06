@@ -1,6 +1,6 @@
 # OpenUtilityAPI
 
-OpenUtilityAPI is a free, self-hosted .NET 10 REST API. Version 0.1.0 provides 15 utilities for Brazilian documents, finance, math, conversions, dates and text. Core and Brazil can also be used directly from .NET. No credentials or external services are required.
+OpenUtilityAPI is a free, self-hosted .NET 10 REST API. Version 0.2.0 offers 15 local utilities and seven public data lookups. Core and Brazil can also be used directly from .NET. Calculations and validations run locally. CEP, locality, bank and indicator observations require outbound HTTPS access to ViaCEP, IBGE, BrasilAPI and BCB SGS, respectively. No credentials are required.
 
 [Português](README.pt-BR.md) · [API contracts](docs/api-contracts.md) · [Architecture](docs/architecture.md) · [Roadmap](docs/roadmap.md)
 
@@ -34,7 +34,7 @@ Start the API and open the URL matching your launch method.
 | Docker with port 8080 mapped | [http://localhost:8080/](http://localhost:8080/) |
 
 1. Choose **Português** or **English** in the header. Your preference is saved in the browser.
-2. Select one of the 15 tools from the catalog.
+2. Select one of the 22 tools from the catalog.
 3. Adjust the form values or select **Use example** to restore the sample.
 4. Select **Send request** to see the formatted result and HTTP status.
 5. Expand **View request and response JSON** to inspect the API payloads.
@@ -44,6 +44,17 @@ Switching languages preserves the form values and the current response. The numb
 The web page is available in every environment. Swagger UI and OpenAPI JSON are available only in `Development` and `Homologation` (HML).
 
 ## Call the API
+
+The playground covers 15 POST utilities and seven GET lookups. Public lookups include postal addresses, states, municipalities, the bank directory, COMPE codes, the indicator catalog and the latest indicator observation.
+
+```sh
+curl http://localhost:5146/api/v1/br/addresses/01001-000
+curl http://localhost:5146/api/v1/br/localities/states/DF/municipalities
+curl http://localhost:5146/api/v1/br/banks/001
+curl http://localhost:5146/api/v1/br/indicators/ipca
+```
+
+External lookup failures return 502 or 504. Unknown records return 404. Successful lookups use bounded process-local caches, with lifetimes documented in the API contracts. The indicator catalog is local. Observations include the reference date and the source's percentage unit. For example, a yearly percentage rate and a daily percentage rate describe different periods.
 
 ```sh
 curl -H 'Content-Type: application/json' --data '{"principal":1000,"ratePerPeriod":0.01,"periods":12}' http://localhost:5146/api/v1/finance/compound-interest
@@ -62,8 +73,8 @@ The examples accept the base URL as their first argument and use `http://localho
 ## Docker
 
 ```sh
-docker build -t openutilityapi:0.1.0 .
-docker run --rm -p 127.0.0.1:8080:8080 openutilityapi:0.1.0
+docker build -t openutilityapi:0.2.0 .
+docker run --rm -p 127.0.0.1:8080:8080 openutilityapi:0.2.0
 ```
 
 Open the [web playground](http://localhost:8080/). The default container environment is `Production`. To enable Swagger for local development or HML, add `-e ASPNETCORE_ENVIRONMENT=Development` or `-e ASPNETCORE_ENVIRONMENT=Homologation` before the image name in the run command. Swagger is then available at `/swagger`. Health is available at `/health`.
@@ -81,6 +92,6 @@ dotnet pack src/OpenUtilityAPI.Core -c Release -o artifacts/packages
 dotnet pack src/OpenUtilityAPI.Brazil -c Release -o artifacts/packages
 ```
 
-Add `artifacts/packages` as a local NuGet source and reference `OpenUtilityAPI.Core` or `OpenUtilityAPI.Brazil` at version `0.1.0`. For example, `OpenUtilityAPI.Core.Finance.Interest(1000m, 0.01m, 12, 2, true)` returns a compound interest result without HTTP.
+Add `artifacts/packages` as a local NuGet source and reference `OpenUtilityAPI.Core` or `OpenUtilityAPI.Brazil` at version `0.2.0`. For example, `OpenUtilityAPI.Core.Finance.Interest(1000m, 0.01m, 12, 2, true)` returns a compound interest result without HTTP.
 
 [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [Changelog](CHANGELOG.md) · [MIT license](LICENSE)

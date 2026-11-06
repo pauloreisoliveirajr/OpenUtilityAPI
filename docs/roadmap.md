@@ -1,6 +1,6 @@
 # Roadmap
 
-The 0.1.0 scope is defined in the [API contracts](api-contracts.md). Future milestones are proposals.
+The 0.1.0 and 0.2.0 contracts are defined in the [API contracts](api-contracts.md). Version 0.2.0 is in release preparation with seven public data routes and a bilingual playground for all 22 tools. Later milestones are proposals.
 
 | Milestone | Candidate scope |
 | --- | --- |

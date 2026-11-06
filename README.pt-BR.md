@@ -1,6 +1,6 @@
 # OpenUtilityAPI
 
-A OpenUtilityAPI é uma API REST gratuita e auto-hospedável em .NET 10. A versão 0.1.0 oferece 15 utilidades de documentos brasileiros, finanças, matemática, conversões, datas e texto. As bibliotecas Core e Brazil também podem ser usadas diretamente no .NET. A API dispensa credenciais e serviços externos.
+A OpenUtilityAPI é uma API REST gratuita e auto-hospedável em .NET 10. A versão 0.2.0 oferece 15 utilidades locais e sete consultas de dados públicos. Core e Brazil também podem ser usados diretamente no .NET. Cálculos e validações são locais. As consultas de CEP, localidades, bancos e observações de indicadores precisam de acesso HTTPS ao ViaCEP, IBGE, BrasilAPI e BCB SGS, respectivamente. As consultas dispensam credenciais.
 
 [English](README.md) · [Contratos da API](docs/api-contracts.md) · [Arquitetura](docs/architecture.md) · [Roadmap](docs/roadmap.md)
 
@@ -34,7 +34,7 @@ Inicie a API e abra o endereço correspondente à forma de execução.
 | Docker com a porta 8080 mapeada | [http://localhost:8080/](http://localhost:8080/) |
 
 1. Escolha **Português** ou **English** no cabeçalho. A preferência fica salva no navegador.
-2. Selecione uma das 15 ferramentas no catálogo.
+2. Selecione uma das 22 ferramentas no catálogo.
 3. Ajuste os valores do formulário ou selecione **Usar exemplo** para restaurar os dados de demonstração.
 4. Selecione **Executar chamada** para visualizar o resultado formatado e o status HTTP.
 5. Expanda **Ver requisição e resposta JSON** para consultar os dados enviados e recebidos pela API.
@@ -44,6 +44,17 @@ A troca de idioma preserva os valores preenchidos e a resposta atual. O idioma d
 A página web fica disponível em todos os ambientes. O Swagger UI e o documento OpenAPI ficam disponíveis somente em `Development` e `Homologation` (HML).
 
 ## Consumo da API
+
+A página oferece 15 utilidades POST e sete consultas GET. As consultas incluem CEP, UFs, municípios, diretório de instituições, código COMPE, catálogo de indicadores e última observação de um indicador.
+
+```sh
+curl http://localhost:5146/api/v1/br/addresses/01001-000
+curl http://localhost:5146/api/v1/br/localities/states/DF/municipalities
+curl http://localhost:5146/api/v1/br/banks/001
+curl http://localhost:5146/api/v1/br/indicators/ipca
+```
+
+Falhas nas fontes externas retornam 502 ou 504. Registros não encontrados retornam 404. As consultas bem-sucedidas usam caches limitados em memória, com prazos descritos nos contratos da API. O catálogo de indicadores é local. As observações incluem data de referência e a unidade percentual da fonte. Por exemplo, uma taxa percentual anual e uma taxa percentual diária se referem a períodos diferentes.
 
 Com a API em execução, rode um dos exemplos:
 
@@ -58,8 +69,8 @@ Os exemplos recebem a URL base como primeiro argumento. A URL padrão é `http:/
 ## Docker
 
 ```sh
-docker build -t openutilityapi:0.1.0 .
-docker run --rm -p 127.0.0.1:8080:8080 openutilityapi:0.1.0
+docker build -t openutilityapi:0.2.0 .
+docker run --rm -p 127.0.0.1:8080:8080 openutilityapi:0.2.0
 ```
 
 Abra a [página web de demonstração](http://localhost:8080/). O ambiente padrão do contêiner é `Production`. Para habilitar o Swagger em desenvolvimento local ou HML, adicione `-e ASPNETCORE_ENVIRONMENT=Development` ou `-e ASPNETCORE_ENVIRONMENT=Homologation` antes do nome da imagem no comando de execução. O Swagger fica acessível em `/swagger`. A rota `/health` verifica o status da API.
@@ -77,6 +88,6 @@ dotnet pack src/OpenUtilityAPI.Core -c Release -o artifacts/packages
 dotnet pack src/OpenUtilityAPI.Brazil -c Release -o artifacts/packages
 ```
 
-Adicione `artifacts/packages` como origem local do NuGet e referencie `OpenUtilityAPI.Core` ou `OpenUtilityAPI.Brazil` na versão `0.1.0`. Por exemplo, `OpenUtilityAPI.Core.Finance.Interest(1000m, 0.01m, 12, 2, true)` calcula juros compostos diretamente em .NET.
+Adicione `artifacts/packages` como origem local do NuGet e referencie `OpenUtilityAPI.Core` ou `OpenUtilityAPI.Brazil` na versão `0.2.0`. Por exemplo, `OpenUtilityAPI.Core.Finance.Interest(1000m, 0.01m, 12, 2, true)` calcula juros compostos diretamente em .NET.
 
 [Contribuição](CONTRIBUTING.md) · [Segurança](SECURITY.md) · [Histórico](CHANGELOG.md) · [Licença MIT](LICENSE)

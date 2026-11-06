@@ -33,7 +33,7 @@ POST to `/api/v1/math/percentage` with `{"operation":"percentOf","value":200,"op
 - `POST /api/v1/text/normalize` with `{"text":" Café  ","trim":true,"collapseWhitespace":true,"removeAccents":true,"letterCase":"upper"}`. Returns the transformed `text`. Options run in the order shown and default to preserving the input. Trimming removes surrounding whitespace, collapsing replaces whitespace runs with one ASCII space, and accent removal strips nonspacing marks after Unicode decomposition. Case conversion uses invariant casing (`preserve`, `lower`, `upper`). Input is limited to 10000 UTF-16 code units.
 - `POST /api/v1/text/email/validate` with `{"value":"person@example.com"}`. Returns `isValid` and `reason`. Supports ASCII dot-atom local parts of at most 64 characters and domains with at least two DNS-style labels. Total length is limited to 254 characters. Quoted local parts, display names and Unicode addresses are outside this syntax profile. Validation performs no network lookups.
 
-## Postal address lookup (v0.2 development)
+## Postal address lookup (v0.2)
 
 GET /api/v1/br/addresses/{postalCode} accepts eight ASCII digits or the standard 00000-000 mask. The response contains postalCode (eight digits), street, complement, neighborhood, city, state (UF) and ibgeCode. Some CEPs have no street-level information, so street, complement and neighborhood can be empty.
 
@@ -63,7 +63,7 @@ Example response:
 }
 ```
 
-## Brazilian localities (v0.2 development)
+## Brazilian localities (v0.2)
 
 GET /api/v1/br/localities/states returns all 26 states and the Federal District as an array of objects containing id, abbreviation, name, regionId and regionName.
 
@@ -90,7 +90,7 @@ Example municipality response:
 ]
 ```
 
-## Bank directory (v0.2 development)
+## Bank directory (v0.2)
 
 GET /api/v1/br/banks returns an array of bank and financial institution records containing ispb (eight ASCII digits, including leading zeros), code (numeric COMPE code or null), name and fullName. The list is sorted by name using pt-BR collation, with ISPB as a tie breaker.
 
@@ -122,7 +122,7 @@ Example response for a code lookup:
 }
 ```
 
-## Economic indicators (v0.2 development)
+## Economic indicators (v0.2)
 
 GET /api/v1/br/indicators returns the supported catalog without contacting an external provider. Each definition contains code, name, seriesId, unit, observationFrequency, source and sourceUrl.
 

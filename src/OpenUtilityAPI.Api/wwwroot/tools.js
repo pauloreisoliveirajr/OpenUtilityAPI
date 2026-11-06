@@ -7,6 +7,7 @@ const financeFields = minimumPeriods => [
   field("periods", "Número de períodos", "number", 12, { min: minimumPeriods, max: 360, step: 1 }),
   precision(6)
 ];
+
 const startDate = () => field("start", "Data inicial", "date", "2024-03-01");
 const financeLimit = "Taxa de 0 a 5% por período, até 360 períodos. Arredondamento de meio para longe de zero. Valores sem tarifas ou impostos.";
 const documentDescription = "Confira o formato e os dígitos verificadores usando um exemplo. A validação é matemática e não consulta situação cadastral.";
@@ -48,5 +49,30 @@ export const tools = [
     field("removeAccents", "Remover acentos", "checkbox", true),
     field("letterCase", "Maiúsculas e minúsculas", "select", "upper", { choices: [["preserve", "Manter como está"], ["lower", "minúsculas"], ["upper", "MAIÚSCULAS"]] })
   ], limit: "Até 10000 caracteres UTF-16. As opções são aplicadas na ordem exibida." },
-  { id: "email", category: "Texto", title: "Validar e-mail", path: "text/email/validate", description: "Verifique se o endereço segue o perfil de sintaxe ASCII aceito pela API.", fields: [field("value", "Endereço de e-mail", "text", "pessoa@example.com", { maxLength: 254 })], limit: "Somente sintaxe: não verifica existência ou entrega. Endereços Unicode e nomes de exibição não são suportados." }
+  { id: "email", category: "Texto", title: "Validar e-mail", path: "text/email/validate", description: "Verifique se o endereço segue o perfil de sintaxe ASCII aceito pela API.", fields: [field("value", "Endereço de e-mail", "text", "pessoa@example.com", { maxLength: 254 })], limit: "Somente sintaxe: não verifica existência ou entrega. Endereços Unicode e nomes de exibição não são suportados." },
+  { id: "cep", category: "Consultas públicas", title: "Consultar CEP", method: "GET", path: "br/addresses/{postalCode}",
+    description: "Consulte o endereço público associado a um CEP brasileiro.",
+    fields: [field("postalCode", "CEP", "text", "01001-000", { maxLength: 9, pattern: "[0-9]{8}|[0-9]{5}-[0-9]{3}" })],
+    limit: "Fonte: ViaCEP. Resultados em cache por uma hora. Depende da disponibilidade da fonte externa." },
+  { id: "states", category: "Consultas públicas", title: "Listar UFs", method: "GET", path: "br/localities/states",
+    description: "Consulte as 26 unidades estaduais e o Distrito Federal, ordenados por nome.",
+    fields: [], limit: "Fonte: IBGE. Resultados em cache por 24 horas." },
+  { id: "municipalities", category: "Consultas públicas", title: "Municípios por UF", method: "GET", path: "br/localities/states/{state}/municipalities",
+    description: "Liste os municípios de uma UF usando a sigla de duas letras.",
+    fields: [field("state", "Sigla da UF", "text", "DF", { maxLength: 2, pattern: "[A-Za-z]{2}", hint: "Exemplos: SP, RJ ou DF. Letras minúsculas são aceitas." })],
+    limit: "Fonte: IBGE. Resultados em cache por 24 horas. Códigos municipais são identificadores IBGE." },
+  { id: "banks", category: "Consultas públicas", title: "Listar instituições", method: "GET", path: "br/banks",
+    description: "Consulte o diretório de bancos e instituições financeiras.",
+    fields: [], limit: "Fonte: BrasilAPI. Cache de 24 horas. Instituições sem código COMPE também aparecem na lista." },
+  { id: "bank", category: "Consultas públicas", title: "Banco por COMPE", method: "GET", path: "br/banks/{code}",
+    description: "Encontre uma instituição pelo código COMPE. Zeros iniciais são aceitos.",
+    fields: [field("code", "Código COMPE", "text", "001", { maxLength: 3, pattern: "[0-9]{1,3}", hint: "Informe um código de 1 a 999, como 001." })],
+    limit: "Fonte: BrasilAPI. Compartilha o cache de 24 horas do diretório." },
+  { id: "indicator-catalog", category: "Consultas públicas", title: "Catálogo de indicadores", method: "GET", path: "br/indicators",
+    description: "Veja os indicadores suportados, suas unidades, frequências e séries de origem.",
+    fields: [], limit: "Catálogo local. As observações são consultadas separadamente no BCB SGS." },
+  { id: "indicator", category: "Consultas públicas", title: "Consultar indicador", method: "GET", path: "br/indicators/{code}",
+    description: "Consulte a última observação retornada pela fonte, com unidade e data de referência.",
+    fields: [field("code", "Indicador", "select", "selic-target", { choices: [["selic-target", "Meta Selic"], ["cdi", "CDI diário"], ["ipca", "IPCA mensal"]] })],
+    limit: "Fonte: BCB SGS. Cache de 15 minutos. Valores são percentuais; a unidade varia conforme a série. A data de referência é a informada pela fonte." }
 ];

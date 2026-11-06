@@ -20,7 +20,7 @@ public sealed class PlaygroundHostingTests
         Assert.Equal(HttpStatusCode.OK, page.StatusCode);
         Assert.Equal("text/html", page.Content.Headers.ContentType?.MediaType);
         Assert.Contains("lang=\"pt-BR\"", await page.Content.ReadAsStringAsync());
-        foreach (var asset in new[] { "/playground.js", "/tools.js", "/language.js", "/playground.css" })
+        foreach (var asset in new[] { "/playground.js", "/tools.js", "/requests.js", "/language.js", "/playground.css" })
         {
             using var response = await client.GetAsync(asset);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);

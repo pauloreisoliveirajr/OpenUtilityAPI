@@ -710,3 +710,12 @@ footer span span[aria-hidden] {
     white-space: nowrap;
   }
 }
+.catalog nav {
+  max-height: 690px;
+  overflow-y: auto;
+}
+@media(max-width:650px) {
+  .catalog nav {
+    max-height: none;
+  }
+}

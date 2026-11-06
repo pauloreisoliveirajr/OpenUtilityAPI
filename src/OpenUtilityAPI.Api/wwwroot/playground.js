@@ -1,4 +1,5 @@
 import { tools } from "./tools.js";
+import { buildRequest } from "./requests.js";
 import { t, getLanguage, setLanguage, restoreLanguage } from "./language.js";
 
 restoreLanguage();
@@ -72,7 +73,7 @@ function createField(field) {
   else input.value = field.value;
   input.required = !field.allowEmpty && !["checkbox", "holidays"].includes(field.type);
   if (field.type === "date") { input.min = "0001-01-01"; input.max = "9999-12-31"; }
-  for (const key of ["min", "max", "step", "maxLength"]) {
+  for (const key of ["min", "max", "step", "maxLength", "pattern"]) {
     if (field[key] !== undefined) input[key] = field[key];
   }
   if (field.type === "holidays") input.maxLength = 4026;
@@ -106,6 +107,12 @@ function renderToolInfo() {
   byId("tool-limit").textContent = t(selected.limit);
 }
 
+function renderFields() {
+  fields.replaceChildren(...selected.fields.map(createField));
+  if (selected.fields.length === 0)
+    fields.append(element("p", t("Esta consulta não precisa de parâmetros."), "tool-description"));
+}
+
 function renderFormError() {
   const error = byId("form-error");
   const field = selected.fields.find(item => item.key === error.dataset.field);
@@ -123,11 +130,12 @@ function applyLanguage() {
   byId("language-selector").value = getLanguage();
   for (const node of document.querySelectorAll("[data-i18n]")) node.textContent = t(node.dataset.i18n);
   for (const node of document.querySelectorAll("[data-i18n-label]")) node.setAttribute("aria-label", t(node.dataset.i18nLabel));
+  for (const node of document.querySelectorAll("[data-tool-count]")) node.textContent = tools.length;
   renderCatalog();
   renderToolInfo();
   // Keep raw field values and response data when changing interface language.
   const values = new Map(Array.from(form.elements).map(input => [input.name, { value: input.value, checked: input.checked }]));
-  fields.replaceChildren(...selected.fields.map(createField));
+  renderFields();
   for (const field of selected.fields) {
     const input = form.elements.namedItem(field.key);
     const previous = values.get(field.key);
@@ -173,8 +181,9 @@ function selectTool(tool) {
     button.setAttribute("aria-current", String(button.dataset.tool === tool.id));
   }
   renderToolInfo();
-  byId("endpoint").textContent = "/api/v1/" + tool.path;
-  fields.replaceChildren(...tool.fields.map(createField));
+  byId("method").textContent = tool.method ?? "POST";
+  byId("request-method").textContent = tool.method ?? "POST";
+  renderFields();
   byId("form-error").hidden = true;
   byId("response-json").textContent = t("Execute uma chamada para ver a resposta.");
   status.textContent = t("Aguardando");
@@ -207,8 +216,14 @@ function payload() {
 }
 
 function updateRequest() {
-  try { byId("request-json").textContent = JSON.stringify(payload(), null, 2); }
-  catch { byId("request-json").textContent = t("Complete os campos para gerar a requisição."); }
+  try {
+    const request = buildRequest(selected, payload());
+    byId("endpoint").textContent = request.url;
+    byId("request-json").textContent = JSON.stringify(request, null, 2);
+  } catch {
+    byId("endpoint").textContent = "/api/v1/" + selected.path;
+    byId("request-json").textContent = t("Complete os campos para gerar a requisição.");
+  }
 }
 form.addEventListener("input", updateRequest);
 byId("reset").addEventListener("click", () => selectTool(selected));
@@ -226,9 +241,78 @@ function row(label, value) {
   line.append(element("span", label), element("strong", value));
   result.append(line);
 }
+
+function lookupTable(headers, rows) {
+  const scroll = element("div", undefined, "table-scroll");
+  scroll.tabIndex = 0;
+  scroll.setAttribute("aria-label", t("Dados da consulta"));
+  const table = element("table");
+  const head = element("thead");
+  const heading = element("tr");
+  for (const title of headers) {
+    const cell = element("th", t(title));
+    cell.scope = "col";
+    heading.append(cell);
+  }
+  head.append(heading);
+  const body = element("tbody");
+  for (const values of rows) {
+    const line = element("tr");
+    for (const value of values) line.append(element("td", value));
+    body.append(line);
+  }
+  table.append(head, body);
+  scroll.append(table);
+  result.append(scroll);
+}
+
+function compe(code) { return code === null ? t("Sem COMPE") : String(code).padStart(3, "0"); }
+function indicatorName(indicator) {
+  const names = { "selic-target": "Meta Selic", cdi: "CDI diário", ipca: "IPCA mensal" };
+  return t(names[indicator.code] ?? indicator.name);
+}
+function indicatorUnit(unit) {
+  const units = { "% per year": "% ao ano", "% per day": "% ao dia", "monthly % change": "% de variação mensal" };
+  return t(units[unit] ?? unit);
+}
+function indicatorFrequency(frequency) { return frequency === "daily" ? t("Diária") : t("Mensal"); }
+
 function renderSuccess(data) {
   result.replaceChildren();
-  if ("isValid" in data) {
+  if (Array.isArray(data)) {
+    mainResult(t("Registros encontrados"), number(data.length));
+    if (selected.id === "states")
+      lookupTable(["Código IBGE", "Sigla da UF", "Nome", "Região"], data.map(item => [String(item.id), item.abbreviation, item.name, item.regionName]));
+    else if (selected.id === "municipalities")
+      lookupTable(["Código IBGE", "Nome", "Sigla da UF"], data.map(item => [String(item.id), item.name, item.state]));
+    else if (selected.id === "banks")
+      lookupTable(["ISPB", "COMPE", "Nome", "Nome completo"], data.map(item => [item.ispb, compe(item.code), item.name, item.fullName]));
+    else if (selected.id === "indicator-catalog")
+      lookupTable(["Indicador", "Série SGS", "Unidade", "Frequência"], data.map(item => [indicatorName(item), String(item.seriesId), indicatorUnit(item.unit), indicatorFrequency(item.observationFrequency)]));
+  } else if (selected.id === "cep") {
+    mainResult(t("Endereço encontrado"), data.postalCode.slice(0, 5) + "-" + data.postalCode.slice(5));
+    row(t("Logradouro"), data.street || t("Não informado"));
+    row(t("Complemento"), data.complement || t("Não informado"));
+    row(t("Bairro"), data.neighborhood || t("Não informado"));
+    row(t("Cidade"), data.city);
+    row(t("Sigla da UF"), data.state);
+    row(t("Código IBGE"), data.ibgeCode);
+  } else if (selected.id === "bank") {
+    mainResult(t("Instituição encontrada"), data.name);
+    row(t("Nome completo"), data.fullName);
+    row("ISPB", data.ispb);
+    row("COMPE", compe(data.code));
+  } else if (selected.id === "indicator") {
+    mainResult(indicatorName(data.indicator), number(data.value) + " " + indicatorUnit(data.indicator.unit));
+    const reference = data.indicator.observationFrequency === "monthly"
+      ? new Intl.DateTimeFormat(getLanguage(), { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(data.referenceDate + "T00:00:00Z"))
+      : date(data.referenceDate);
+    row(t("Referência"), reference);
+    row(t("Frequência"), indicatorFrequency(data.indicator.observationFrequency));
+    row(t("Fonte"), data.indicator.source);
+    row(t("Série SGS"), String(data.indicator.seriesId));
+    row(t("Consulta (UTC)"), new Intl.DateTimeFormat(getLanguage(), { dateStyle: "short", timeStyle: "short", timeZone: "UTC" }).format(new Date(data.retrievedAtUtc)));
+  } else if ("isValid" in data) {
     mainResult(selected.id === "email" ? t("Verificação de sintaxe") : t("Verificação matemática"),
       data.isValid ? t("Válido") : t("Inválido"),
       data.isValid ? t("O exemplo passou nas verificações desta ferramenta.") : t("O valor não passou nas verificações desta ferramenta."));
@@ -283,7 +367,9 @@ function renderError(data, httpStatus, retryAfter) {
     message = Number.isFinite(seconds) && seconds > 0
       ? t("Limite de chamadas atingido. Tente novamente em ") + Math.ceil(seconds) + t(" segundos.")
       : t("Limite de chamadas atingido. Aguarde um momento e tente novamente.");
-  } else if (httpStatus >= 500) message = t("O serviço encontrou um erro. Tente novamente em instantes.");
+  } else if (httpStatus === 404) message = t("Nenhum dado encontrado para esta consulta.");
+  else if (httpStatus === 502 || httpStatus === 504) message = t("A fonte externa está indisponível. Tente novamente em instantes.");
+  else if (httpStatus >= 500) message = t("O serviço encontrou um erro. Tente novamente em instantes.");
   block.append(element("strong", message));
   if (httpStatus === 400 && data.errors) {
     const list = element("ul");
@@ -313,8 +399,8 @@ form.addEventListener("submit", async event => {
     invalid.focus();
     return;
   }
-  let body;
-  try { body = payload(); }
+  let request;
+  try { request = buildRequest(selected, payload()); }
   catch (failure) { error.dataset.message = failure.message; error.textContent = t(failure.message); error.hidden = false; return; }
   lastOutcome = null;
   const controller = new AbortController();
@@ -323,15 +409,15 @@ form.addEventListener("submit", async event => {
   resultPanel.setAttribute("aria-busy", "true");
   status.className = "status-label";
   status.textContent = t("Executando…");
-  byId("request-json").textContent = JSON.stringify(body, null, 2);
+  byId("endpoint").textContent = request.url;
+  byId("request-json").textContent = JSON.stringify(request, null, 2);
   byId("response-json").textContent = t("Aguardando resposta…");
   result.replaceChildren(element("p", t("Consultando a API…"), "empty-state"));
   const timeout = setTimeout(() => controller.abort("timeout"), 20000);
   try {
-    const response = await fetch("/api/v1/" + selected.path, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+    const response = await fetch(request.url, {
+      method: request.method,
+      ...(request.method === "POST" ? { headers: { "Content-Type": "application/json" }, body: JSON.stringify(request.body) } : {}),
       signal: controller.signal
     });
     const text = await response.text();

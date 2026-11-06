@@ -20,16 +20,16 @@
   <main>
     <section class="intro" aria-labelledby="page-title">
       <div><p class="eyebrow"><span data-i18n="UTILIDADES PARA O DIA A DIA">UTILIDADES PARA O DIA A DIA</span></p><h1 id="page-title"><span data-i18n="Uma API. Muitas">Uma API. Muitas</span><br><span data-i18n="coisas resolvidas.">coisas resolvidas.</span></h1><p class="intro-text"><span data-i18n="Escolha uma ferramenta, ajuste os valores e veja a resposta.">Escolha uma ferramenta, ajuste os valores e veja a resposta.</span><br class="desktop-break"><span data-i18n="Tudo por aqui, direto da API."> Tudo por aqui, direto da API.</span></p></div>
-      <div class="intro-stamp"><span class="stamp-symbol" aria-hidden="true">↗</span><div><strong><span data-i18n="15 ferramentas">15 ferramentas</span></strong><span><span data-i18n="Brasil e mundo, em um só lugar.">Brasil e mundo, em um só lugar.</span></span></div></div>
+      <div class="intro-stamp"><span class="stamp-symbol" aria-hidden="true">↗</span><div><strong><span data-tool-count>22</span> <span data-i18n="ferramentas">ferramentas</span></strong><span><span data-i18n="Brasil e mundo, em um só lugar.">Brasil e mundo, em um só lugar.</span></span></div></div>
     </section>
     <div class="app-layout">
       <aside class="catalog" aria-label="Ferramentas disponíveis" data-i18n-label="Ferramentas disponíveis">
-        <div class="catalog-header"><h2><span data-i18n="Explore as ferramentas">Explore as ferramentas</span></h2><span>15</span></div>
+        <div class="catalog-header"><h2><span data-i18n="Explore as ferramentas">Explore as ferramentas</span></h2><span data-tool-count>22</span></div>
         <nav id="tool-list" aria-label="Selecionar ferramenta" data-i18n-label="Selecionar ferramenta"></nav>
         <p class="catalog-note"><span data-i18n="Gratuita, open source e feita para simplificar.">Gratuita, open source e feita para simplificar.</span></p>
       </aside>
       <section id="workspace" class="workspace" aria-labelledby="tool-title" tabindex="-1">
-        <div class="tool-heading"><div><p id="tool-category" class="eyebrow"></p><h2 id="tool-title"></h2></div><span class="method-badge">POST</span></div>
+        <div class="tool-heading"><div><p id="tool-category" class="eyebrow"></p><h2 id="tool-title"></h2></div><span id="method" class="method-badge">POST</span></div>
         <p id="tool-description" class="tool-description"></p>
         <div class="work-columns">
           <section class="input-panel" aria-labelledby="input-title">
@@ -48,7 +48,7 @@
         </div>
         <details class="technical">
           <summary><span data-i18n="Ver requisição e resposta JSON">Ver requisição e resposta JSON </span><span aria-hidden="true">↗</span></summary>
-          <div class="endpoint-line"><span>POST</span><code id="endpoint"></code></div>
+          <div class="endpoint-line"><span id="request-method">POST</span><code id="endpoint"></code></div>
           <div class="json-grid"><div><h3><span data-i18n="Requisição">Requisição</span></h3><pre id="request-json"></pre></div><div><h3><span data-i18n="Resposta">Resposta</span></h3><pre id="response-json"><span data-i18n="Execute uma chamada para ver a resposta.">Execute uma chamada para ver a resposta.</span></pre></div></div>
         </details>
         <p id="tool-limit" class="tool-limit"></p>
