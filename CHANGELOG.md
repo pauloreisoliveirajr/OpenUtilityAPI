@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Added IBGE state and municipality lists with replaceable adapters, bounded 24-hour caching and provider failure handling.
 - Added a public CEP lookup through a replaceable ViaCEP adapter, bounded local caching and explicit provider error responses.
 - Added a responsive Portuguese and English playground for all 15 utilities with formatted results and request/response JSON.
 - Enabled Swagger in Development and Homologation while keeping the public playground available in all environments.

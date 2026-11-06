@@ -62,3 +62,30 @@ Example response:
   "ibgeCode": "3550308"
 }
 ```
+
+## Brazilian localities (v0.2 development)
+
+GET /api/v1/br/localities/states returns all 26 states and the Federal District as an array of objects containing id, abbreviation, name, regionId and regionName.
+
+GET /api/v1/br/localities/states/{state}/municipalities returns an array of objects containing id (the seven-digit IBGE municipality code), name and state (the uppercase UF abbreviation). The state parameter accepts a recognized two-letter abbreviation in either case, such as SP, sp or DF. Unknown abbreviations, numeric state IDs, surrounding whitespace and multiple-state requests return 400 before any provider call.
+
+Both lists are sorted by name using pt-BR collation with ID as a tie breaker. Names are returned as published by IBGE. The Federal District follows the municipality-equivalent records supplied by IBGE.
+
+The default adapter uses the official [IBGE Localities API](https://servicodados.ibge.gov.br/api/docs/localidades) over HTTPS. It requests the flattened municipality representation to avoid depending on legacy regional subdivisions. Provider HTTP errors, malformed or empty responses, duplicate IDs, incomplete state lists and state/municipality mismatches return 502. Provider timeouts and a busy lookup queue return 504. Errors use Problem Details, and request cancellation propagates to the provider.
+
+Successful lists are cached for 24 hours in a process-local cache with 28 entries (one state list plus one list per UF). Restarting clears the cache. Failures are not cached. Cache misses share one outbound slot, with a maximum five-second wait for that slot. The client has a five-second HTTP timeout, a 2 MiB response buffer limit and redirects disabled. Municipality responses are limited to 1000 records per state. No automatic retries are performed. Existing API rate limits apply.
+
+Example requests:
+
+```sh
+curl http://localhost:5146/api/v1/br/localities/states
+curl http://localhost:5146/api/v1/br/localities/states/DF/municipalities
+```
+
+Example municipality response:
+
+```json
+[
+  { "id": 5300108, "name": "Brasília", "state": "DF" }
+]
+```

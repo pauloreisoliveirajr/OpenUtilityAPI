@@ -8,6 +8,13 @@ builder.WebHost.ConfigureKestrel(options => options.Limits.MaxRequestBodySize = 
 builder.Services.AddProblemDetails();
 builder.Services.AddControllers();
 builder.Services.AddHealthChecks();
+builder.Services.AddSingleton<LocalityCache>();
+builder.Services.AddHttpClient<ILocalityLookup, IbgeLocalityLookup>(client =>
+{
+    client.BaseAddress = new Uri("https://servicodados.ibge.gov.br/");
+    client.Timeout = TimeSpan.FromSeconds(5);
+    client.MaxResponseContentBufferSize = 2097152;
+}).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false });
 builder.Services.AddSingleton<PostalAddressCache>();
 builder.Services.AddHttpClient<IPostalAddressLookup, ViaCepAddressLookup>(client =>
 {
