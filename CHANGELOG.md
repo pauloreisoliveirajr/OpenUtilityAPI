@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Added a local economic indicator catalog and BCB SGS observations for Selic target, daily CDI and monthly IPCA, with reference dates, explicit units and bounded caching.
 - Added a bank directory and COMPE code lookup using BrasilAPI, shared 24-hour caching and explicit handling of institutions without COMPE codes.
 - Added IBGE state and municipality lists with replaceable adapters, bounded 24-hour caching and provider failure handling.
 - Added a public CEP lookup through a replaceable ViaCEP adapter, bounded local caching and explicit provider error responses.

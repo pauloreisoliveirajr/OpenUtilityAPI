@@ -121,3 +121,33 @@ Example response for a code lookup:
   "fullName": "Banco do Brasil S.A."
 }
 ```
+
+## Economic indicators (v0.2 development)
+
+GET /api/v1/br/indicators returns the supported catalog without contacting an external provider. Each definition contains code, name, seriesId, unit, observationFrequency, source and sourceUrl.
+
+| Code | BCB SGS series | Value unit | Observation frequency |
+| --- | --- | --- | --- |
+| selic-target | 432 | Percent per year | Daily |
+| cdi | 12 | Percent per day | Daily |
+| ipca | 433 | Monthly percentage change | Monthly |
+
+Definitions are based on the official BCB metadata for [Selic target](https://dadosabertos.bcb.gov.br/dataset/432-taxa-de-juros---meta-selic-definida-pelo-copom), [CDI](https://www3.bcb.gov.br/sgspub/consultarvalores/consultarValoresSeries.do?method=consultarSeries&series=12) and [IPCA](https://www3.bcb.gov.br/sgspub/consultarvalores/consultarValoresSeries.do?method=consultarSeries&series=433).
+
+GET /api/v1/br/indicators/{code} returns the latest single record supplied by the BCB SGS endpoint for that series. Codes are case insensitive. Unknown codes return 404 before contacting the provider. An empty source series also returns 404.
+
+The response contains indicator (the catalog definition), value (decimal), referenceDate (ISO date from the source) and retrievedAtUtc (UTC retrieval timestamp). For monthly IPCA, referenceDate is the first day of the reference month, and retrievedAtUtc is the retrieval time rather than a publication date. Cached responses retain the original retrieval timestamp. Reference dates are preserved exactly as supplied, including any dates later than the server's clock.
+
+Values use percentage units. For example, 13.75 in the Selic target series means 13.75% per year. A CDI value of 0.055131 means 0.055131% per day. An IPCA value of -0.12 means a monthly change of -0.12%. Values are parsed with invariant decimal syntax and are not annualized or rounded. These percentage values have a different scale from the fractional ratePerPeriod used by finance calculations.
+
+The default adapter calls https://api.bcb.gov.br/ over HTTPS using a fixed series allowlist. Each successful observation is cached in process for 15 minutes, while missing observations are cached for five minutes. The cache holds at most three entries, is cleared on restart and is independent across instances. Failures are not cached. Cache misses share one outbound slot with a maximum five-second wait. The HTTP client has a five-second timeout, a 32 KiB response buffer limit and redirects disabled. No automatic retries are performed. Existing API rate limits apply.
+
+Malformed data, unparseable decimal values, invalid dates, unexpected multi-record responses and provider HTTP errors return 502. A 304 response without a usable representation is treated as a provider error. Provider timeouts and a busy lookup queue return 504. All errors use generic Problem Details, and request cancellation propagates to the provider.
+
+Example requests:
+
+```sh
+curl http://localhost:5146/api/v1/br/indicators
+curl http://localhost:5146/api/v1/br/indicators/selic-target
+curl http://localhost:5146/api/v1/br/indicators/ipca
+```

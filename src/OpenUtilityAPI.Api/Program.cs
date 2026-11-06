@@ -8,6 +8,13 @@ builder.WebHost.ConfigureKestrel(options => options.Limits.MaxRequestBodySize = 
 builder.Services.AddProblemDetails();
 builder.Services.AddControllers();
 builder.Services.AddHealthChecks();
+builder.Services.AddSingleton<IndicatorCache>();
+builder.Services.AddHttpClient<IIndicatorLookup, BcbIndicatorLookup>(client =>
+{
+    client.BaseAddress = new Uri("https://api.bcb.gov.br/");
+    client.Timeout = TimeSpan.FromSeconds(5);
+    client.MaxResponseContentBufferSize = 32768;
+}).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false });
 builder.Services.AddSingleton<BankDirectoryCache>();
 builder.Services.AddHttpClient<IBankLookup, BrasilApiBankLookup>(client =>
 {
