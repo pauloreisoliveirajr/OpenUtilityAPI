@@ -53,19 +53,21 @@ public sealed class HostingPolicyTests
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
-    [Fact]
-    public async Task ProductionExceptionsReturnGenericProblem()
+    [Theory]
+    [InlineData("/test/failure", HttpStatusCode.InternalServerError)]
+    [InlineData("/test/body-too-large", HttpStatusCode.RequestEntityTooLarge)]
+    public async Task ProductionExceptionsReturnGenericProblem(string path, HttpStatusCode status)
     {
         using var factory = CreateFactory(new(), "Production").WithWebHostBuilder(builder =>
             builder.ConfigureServices(services =>
                 services.AddControllers().AddApplicationPart(typeof(FailureProbeController).Assembly)));
         using var client = factory.CreateClient();
-        using var response = await client.GetAsync("/test/failure");
-        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        using var response = await client.GetAsync(path);
+        Assert.Equal(status, response.StatusCode);
         Assert.Equal("application/problem+json", response.Content.Headers.ContentType?.MediaType);
         var body = await response.Content.ReadAsStringAsync();
         using var problem = JsonDocument.Parse(body);
-        Assert.Equal(500, problem.RootElement.GetProperty("status").GetInt32());
+        Assert.Equal((int)status, problem.RootElement.GetProperty("status").GetInt32());
         Assert.DoesNotContain("Sensitive failure probe", body);
         Assert.DoesNotContain("InvalidOperationException", body);
     }
@@ -85,4 +87,8 @@ public sealed class FailureProbeController : ControllerBase
 {
     [HttpGet("/test/failure")]
     public IActionResult Get() => throw new InvalidOperationException("Sensitive failure probe");
+
+    [HttpGet("/test/body-too-large")]
+    public IActionResult BodyTooLarge() => throw new Microsoft.AspNetCore.Http.BadHttpRequestException(
+        "Sensitive failure probe", 413);
 }
