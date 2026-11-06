@@ -15,13 +15,33 @@ dotnet test -c Release --no-build
 dotnet run --project src/OpenUtilityAPI.Api --launch-profile http
 ```
 
-Abra a [página pública de demonstração](http://localhost:5146/) para testar as 15 ferramentas com formulários e resultados em português ou inglês. Use o seletor no cabeçalho; a preferência fica salva neste navegador. A troca de idioma preserva os valores e as respostas. O idioma do número por extenso é escolhido separadamente no formulário. Expanda o painel JSON para consultar a requisição e a resposta. As chamadas usam a mesma API e seus limites de uso.
+Abra a [página web de demonstração](http://localhost:5146/) para testar a API pelo navegador. Siga os passos em [Como usar a página web](#como-usar-a-página-web).
 
 Abra o [Swagger UI](http://localhost:5146/swagger) ou confira o [status da API](http://localhost:5146/health). O documento OpenAPI fica em `/swagger/v1/swagger.json`.
 
 ### Visual Studio 2026
 
 Instale a carga de trabalho **ASP.NET and web development** e o SDK .NET 10. Abra `OpenUtilityAPI.sln`, defina `OpenUtilityAPI.Api` como projeto de inicialização, selecione o perfil `https` e pressione **F5**. O Swagger abre em `https://localhost:7146/swagger`. Se necessário, execute `dotnet dev-certs https --trust` e aceite a confirmação de confiança no certificado.
+
+## Como usar a página web
+
+Inicie a API e abra o endereço correspondente à forma de execução.
+
+| Forma de execução | Página web |
+| --- | --- |
+| CLI com o perfil `http` | [http://localhost:5146/](http://localhost:5146/) |
+| Visual Studio com o perfil `https` | [https://localhost:7146/](https://localhost:7146/) |
+| Docker com a porta 8080 mapeada | [http://localhost:8080/](http://localhost:8080/) |
+
+1. Escolha **Português** ou **English** no cabeçalho. A preferência fica salva no navegador.
+2. Selecione uma das 15 ferramentas no catálogo.
+3. Ajuste os valores do formulário ou selecione **Usar exemplo** para restaurar os dados de demonstração.
+4. Selecione **Executar chamada** para visualizar o resultado formatado e o status HTTP.
+5. Expanda **Ver requisição e resposta JSON** para consultar os dados enviados e recebidos pela API.
+
+A troca de idioma preserva os valores preenchidos e a resposta atual. O idioma do número por extenso é escolhido separadamente no formulário. Use dados de exemplo ao testar documentos pessoais. As chamadas seguem os limites de uso da API.
+
+A página web fica disponível em todos os ambientes. O Swagger UI e o documento OpenAPI ficam disponíveis somente em `Development` e `Homologation` (HML).
 
 ## Consumo da API
 
@@ -39,10 +59,10 @@ Os exemplos recebem a URL base como primeiro argumento. A URL padrão é `http:/
 
 ```sh
 docker build -t openutilityapi:0.1.0 .
-docker run --rm -p 127.0.0.1:8080:8080 -e ASPNETCORE_ENVIRONMENT=Development openutilityapi:0.1.0
+docker run --rm -p 127.0.0.1:8080:8080 openutilityapi:0.1.0
 ```
 
-Abra `http://localhost:8080/swagger`. A opção de ambiente habilita o Swagger para desenvolvimento local. O ambiente padrão do contêiner é Production. A rota `/health` verifica o status da API.
+Abra a [página web de demonstração](http://localhost:8080/). O ambiente padrão do contêiner é `Production`. Para habilitar o Swagger em desenvolvimento local ou HML, adicione `-e ASPNETCORE_ENVIRONMENT=Development` ou `-e ASPNETCORE_ENVIRONMENT=Homologation` antes do nome da imagem no comando de execução. O Swagger fica acessível em `/swagger`. A rota `/health` verifica o status da API.
 
 ## Configuração
 

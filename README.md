@@ -15,13 +15,33 @@ dotnet test -c Release --no-build
 dotnet run --project src/OpenUtilityAPI.Api --launch-profile http
 ```
 
-Open the [public playground](http://localhost:5146/) to try all 15 utilities with Portuguese or English forms and formatted results. Use the language selector in the header; your preference is saved in this browser. Changing the interface language preserves inputs and responses. The number-to-words output culture is chosen separately in its form. Expand the JSON panel to inspect requests and responses. Calls use the same API and rate limits.
+Open the [web playground](http://localhost:5146/) to try the API in your browser. Follow the steps in [Using the web page](#using-the-web-page).
 
 Open [Swagger UI](http://localhost:5146/swagger) or check [service health](http://localhost:5146/health). The OpenAPI document is at `/swagger/v1/swagger.json`.
 
 ### Visual Studio 2026
 
 Install the **ASP.NET and web development** workload and the .NET 10 SDK. Open `OpenUtilityAPI.sln`, set `OpenUtilityAPI.Api` as the startup project, choose the `https` profile and press **F5**. Swagger opens at `https://localhost:7146/swagger`. If needed, run `dotnet dev-certs https --trust` and accept the trust prompt.
+
+## Using the web page
+
+Start the API and open the URL matching your launch method.
+
+| Launch method | Web page |
+| --- | --- |
+| CLI with the `http` profile | [http://localhost:5146/](http://localhost:5146/) |
+| Visual Studio with the `https` profile | [https://localhost:7146/](https://localhost:7146/) |
+| Docker with port 8080 mapped | [http://localhost:8080/](http://localhost:8080/) |
+
+1. Choose **Português** or **English** in the header. Your preference is saved in the browser.
+2. Select one of the 15 tools from the catalog.
+3. Adjust the form values or select **Use example** to restore the sample.
+4. Select **Send request** to see the formatted result and HTTP status.
+5. Expand **View request and response JSON** to inspect the API payloads.
+
+Switching languages preserves the form values and the current response. The number-to-words output language is selected separately in its form. Use sample data when testing personal documents. Requests use the API's existing rate limits.
+
+The web page is available in every environment. Swagger UI and OpenAPI JSON are available only in `Development` and `Homologation` (HML).
 
 ## Call the API
 
@@ -43,10 +63,10 @@ The examples accept the base URL as their first argument and use `http://localho
 
 ```sh
 docker build -t openutilityapi:0.1.0 .
-docker run --rm -p 127.0.0.1:8080:8080 -e ASPNETCORE_ENVIRONMENT=Development openutilityapi:0.1.0
+docker run --rm -p 127.0.0.1:8080:8080 openutilityapi:0.1.0
 ```
 
-Open `http://localhost:8080/swagger`. The environment flag enables Swagger for local development. The default container environment is Production. Health is available at `/health`.
+Open the [web playground](http://localhost:8080/). The default container environment is `Production`. To enable Swagger for local development or HML, add `-e ASPNETCORE_ENVIRONMENT=Development` or `-e ASPNETCORE_ENVIRONMENT=Homologation` before the image name in the run command. Swagger is then available at `/swagger`. Health is available at `/health`.
 
 ## Configuration
 
