@@ -15,6 +15,8 @@ dotnet test -c Release --no-build
 dotnet run --project src/OpenUtilityAPI.Api --launch-profile http
 ```
 
+Open the [public playground](http://localhost:5146/) to try all 15 utilities with Portuguese or English forms and formatted results. Use the language selector in the header; your preference is saved in this browser. Changing the interface language preserves inputs and responses. The number-to-words output culture is chosen separately in its form. Expand the JSON panel to inspect requests and responses. Calls use the same API and rate limits.
+
 Open [Swagger UI](http://localhost:5146/swagger) or check [service health](http://localhost:5146/health). The OpenAPI document is at `/swagger/v1/swagger.json`.
 
 ### Visual Studio 2026
@@ -50,7 +52,7 @@ Open `http://localhost:8080/swagger`. The environment flag enables Swagger for l
 
 The API accepts unauthenticated requests. The default fixed window is 120 requests per minute per remote IP. Configure it using `RateLimit__RequestsPerMinute`. Excess requests return 429 Problem Details and a `Retry-After` header when available. Behind a reverse proxy the API sees the proxy's address by default.
 
-Browser cross-origin access is disabled by default. Set explicit origins using `Cors__Origins__0`, `Cors__Origins__1` and so on. Kestrel limits request bodies to 64 KiB. Swagger UI and its JSON document are available in Development.
+Browser cross-origin access is disabled by default. Set explicit origins using `Cors__Origins__0`, `Cors__Origins__1` and so on. Kestrel limits request bodies to 64 KiB. Swagger UI and its JSON document are available only when ASPNETCORE_ENVIRONMENT is Development or Homologation (HML). The playground at / is available in every environment. The environment name Homologation is explicit; Staging does not enable Swagger. Configure network access to HML according to your deployment.
 
 ## Local NuGet packages
 

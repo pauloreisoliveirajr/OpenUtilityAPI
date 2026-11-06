@@ -15,6 +15,8 @@ dotnet test -c Release --no-build
 dotnet run --project src/OpenUtilityAPI.Api --launch-profile http
 ```
 
+Abra a [página pública de demonstração](http://localhost:5146/) para testar as 15 ferramentas com formulários e resultados em português ou inglês. Use o seletor no cabeçalho; a preferência fica salva neste navegador. A troca de idioma preserva os valores e as respostas. O idioma do número por extenso é escolhido separadamente no formulário. Expanda o painel JSON para consultar a requisição e a resposta. As chamadas usam a mesma API e seus limites de uso.
+
 Abra o [Swagger UI](http://localhost:5146/swagger) ou confira o [status da API](http://localhost:5146/health). O documento OpenAPI fica em `/swagger/v1/swagger.json`.
 
 ### Visual Studio 2026
@@ -46,7 +48,7 @@ Abra `http://localhost:8080/swagger`. A opção de ambiente habilita o Swagger p
 
 A API aceita chamadas sem autenticação. O limite padrão é de 120 requisições por minuto por IP remoto, em janelas fixas. Ajuste-o com `RateLimit__RequestsPerMinute`. O excesso retorna HTTP 429 com Problem Details e o cabeçalho `Retry-After` quando disponível. Atrás de um proxy reverso, a API recebe por padrão o endereço do proxy.
 
-O acesso de outras origens pelo navegador fica desabilitado por padrão. Configure origens explícitas com `Cors__Origins__0`, `Cors__Origins__1` e assim por diante. O Kestrel limita o corpo da requisição a 64 KiB. A interface Swagger e seu documento JSON ficam disponíveis em Development.
+O acesso de outras origens pelo navegador fica desabilitado por padrão. Configure origens explícitas com `Cors__Origins__0`, `Cors__Origins__1` e assim por diante. O Kestrel limita o corpo da requisição a 64 KiB. A interface Swagger e seu documento JSON ficam disponíveis somente com ASPNETCORE_ENVIRONMENT definido como Development ou Homologation (HML). A página pública em / fica disponível em todos os ambientes. O nome Homologation é explícito; Staging não habilita o Swagger. Configure o acesso de rede à HML de acordo com sua implantação.
 
 ## Pacotes NuGet locais
 

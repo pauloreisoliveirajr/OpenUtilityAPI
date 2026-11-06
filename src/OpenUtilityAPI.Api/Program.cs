@@ -45,13 +45,15 @@ app.UseExceptionHandler(new ExceptionHandlerOptions
         : StatusCodes.Status500InternalServerError
 });
 app.UseStatusCodePages();
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Homologation"))
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 app.UseCors();
 app.UseRateLimiter();
+app.UseDefaultFiles();
+app.UseStaticFiles();
 app.MapHealthChecks("/health");
 app.MapControllers();
 app.Run();

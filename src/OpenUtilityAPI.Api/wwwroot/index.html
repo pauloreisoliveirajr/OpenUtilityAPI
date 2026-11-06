@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Experimente as utilidades da OpenUtilityAPI. Valide documentos, calcule juros e converta valores diretamente no navegador.">
+  <meta name="theme-color" content="#123831">
+  <title>OpenUtilityAPI · Experimente</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23123831'/%3E%3Cpath d='m13 9-6 7 6 7m6-14 6 7-6 7' fill='none' stroke='%23d8ed9a' stroke-width='3'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/playground.css">
+  <script type="module" src="/playground.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#workspace"><span data-i18n="Ir para a ferramenta">Ir para a ferramenta</span></a>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="OpenUtilityAPI início" data-i18n-label="OpenUtilityAPI início"><span class="brand-mark" aria-hidden="true">〈/〉</span><span>OpenUtility<span class="brand-light">API</span></span></a>
+    <span class="top-note"><span class="dot"></span><span data-i18n="Aberta para experimentar"> Aberta para experimentar</span></span>
+    <div class="header-actions"><label class="language-control" for="language-selector"><span><span data-i18n="Idioma da página">Idioma da página</span></span><select id="language-selector"><option value="pt-BR">Português</option><option value="en-US">English</option></select></label><a class="source-link" href="https://github.com/pauloreisoliveirajr/OpenUtilityAPI"><span data-i18n="Código no GitHub">Código no GitHub </span><span aria-hidden="true">↗</span></a></div>
+  </header>
+  <main>
+    <section class="intro" aria-labelledby="page-title">
+      <div><p class="eyebrow"><span data-i18n="UTILIDADES PARA O DIA A DIA">UTILIDADES PARA O DIA A DIA</span></p><h1 id="page-title"><span data-i18n="Uma API. Muitas">Uma API. Muitas</span><br><span data-i18n="coisas resolvidas.">coisas resolvidas.</span></h1><p class="intro-text"><span data-i18n="Escolha uma ferramenta, ajuste os valores e veja a resposta.">Escolha uma ferramenta, ajuste os valores e veja a resposta.</span><br class="desktop-break"><span data-i18n="Tudo por aqui, direto da API."> Tudo por aqui, direto da API.</span></p></div>
+      <div class="intro-stamp"><span class="stamp-symbol" aria-hidden="true">↗</span><div><strong><span data-i18n="15 ferramentas">15 ferramentas</span></strong><span><span data-i18n="Brasil e mundo, em um só lugar.">Brasil e mundo, em um só lugar.</span></span></div></div>
+    </section>
+    <div class="app-layout">
+      <aside class="catalog" aria-label="Ferramentas disponíveis" data-i18n-label="Ferramentas disponíveis">
+        <div class="catalog-header"><h2><span data-i18n="Explore as ferramentas">Explore as ferramentas</span></h2><span>15</span></div>
+        <nav id="tool-list" aria-label="Selecionar ferramenta" data-i18n-label="Selecionar ferramenta"></nav>
+        <p class="catalog-note"><span data-i18n="Gratuita, open source e feita para simplificar.">Gratuita, open source e feita para simplificar.</span></p>
+      </aside>
+      <section id="workspace" class="workspace" aria-labelledby="tool-title" tabindex="-1">
+        <div class="tool-heading"><div><p id="tool-category" class="eyebrow"></p><h2 id="tool-title"></h2></div><span class="method-badge">POST</span></div>
+        <p id="tool-description" class="tool-description"></p>
+        <div class="work-columns">
+          <section class="input-panel" aria-labelledby="input-title">
+            <div class="panel-heading"><h3 id="input-title"><span data-i18n="Experimente">Experimente</span></h3><button id="reset" type="button" class="text-button"><span data-i18n="Usar exemplo ↺">Usar exemplo ↺</span></button></div>
+            <form id="tool-form" novalidate>
+              <div id="fields"></div>
+              <p id="form-error" class="form-error" role="alert" hidden></p>
+              <button id="execute" class="execute" type="submit"><span data-i18n="Executar chamada">Executar chamada </span><span aria-hidden="true">→</span></button>
+            </form>
+            <p class="input-note"><span data-i18n="Use dados de exemplo ao testar documentos pessoais.">Use dados de exemplo ao testar documentos pessoais.</span></p>
+          </section>
+          <section class="result-panel" aria-labelledby="result-title" aria-busy="false">
+            <div class="panel-heading"><h3 id="result-title"><span data-i18n="Resultado">Resultado</span></h3><span id="status" class="status-label"><span data-i18n="Aguardando">Aguardando</span></span></div>
+            <div id="result" class="result-content" aria-live="polite"><div class="empty-state"><span aria-hidden="true">⌁</span><strong><span data-i18n="Sua resposta aparece aqui">Sua resposta aparece aqui</span></strong><p><span data-i18n="Preencha os campos e execute uma chamada para começar.">Preencha os campos e execute uma chamada para começar.</span></p></div></div>
+          </section>
+        </div>
+        <details class="technical">
+          <summary><span data-i18n="Ver requisição e resposta JSON">Ver requisição e resposta JSON </span><span aria-hidden="true">↗</span></summary>
+          <div class="endpoint-line"><span>POST</span><code id="endpoint"></code></div>
+          <div class="json-grid"><div><h3><span data-i18n="Requisição">Requisição</span></h3><pre id="request-json"></pre></div><div><h3><span data-i18n="Resposta">Resposta</span></h3><pre id="response-json"><span data-i18n="Execute uma chamada para ver a resposta.">Execute uma chamada para ver a resposta.</span></pre></div></div>
+        </details>
+        <p id="tool-limit" class="tool-limit"></p>
+      </section>
+    </div>
+    <footer><span>OpenUtilityAPI <span aria-hidden="true">/</span><span data-i18n="Utilidades que conectam."> Utilidades que conectam.</span></span><span><span data-i18n="Sem cadastro · Chamadas sujeitas a limite de uso">Sem cadastro · Chamadas sujeitas a limite de uso</span></span></footer>
+  </main>
+</body>
+</html>
