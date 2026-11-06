@@ -1,11 +1,20 @@
 using System.Threading.RateLimiting;
 using OpenUtilityAPI.Api;
+using OpenUtilityAPI.Brazil;
+using OpenUtilityAPI.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.ConfigureKestrel(options => options.Limits.MaxRequestBodySize = 65536);
 builder.Services.AddProblemDetails();
 builder.Services.AddControllers();
 builder.Services.AddHealthChecks();
+builder.Services.AddSingleton<PostalAddressCache>();
+builder.Services.AddHttpClient<IPostalAddressLookup, ViaCepAddressLookup>(client =>
+{
+    client.BaseAddress = new Uri("https://viacep.com.br/");
+    client.Timeout = TimeSpan.FromSeconds(5);
+    client.MaxResponseContentBufferSize = 32768;
+}).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {

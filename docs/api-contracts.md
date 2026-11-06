@@ -32,3 +32,33 @@ POST to `/api/v1/math/percentage` with `{"operation":"percentOf","value":200,"op
 
 - `POST /api/v1/text/normalize` with `{"text":" Café  ","trim":true,"collapseWhitespace":true,"removeAccents":true,"letterCase":"upper"}`. Returns the transformed `text`. Options run in the order shown and default to preserving the input. Trimming removes surrounding whitespace, collapsing replaces whitespace runs with one ASCII space, and accent removal strips nonspacing marks after Unicode decomposition. Case conversion uses invariant casing (`preserve`, `lower`, `upper`). Input is limited to 10000 UTF-16 code units.
 - `POST /api/v1/text/email/validate` with `{"value":"person@example.com"}`. Returns `isValid` and `reason`. Supports ASCII dot-atom local parts of at most 64 characters and domains with at least two DNS-style labels. Total length is limited to 254 characters. Quoted local parts, display names and Unicode addresses are outside this syntax profile. Validation performs no network lookups.
+
+## Postal address lookup (v0.2 development)
+
+GET /api/v1/br/addresses/{postalCode} accepts eight ASCII digits or the standard 00000-000 mask. The response contains postalCode (eight digits), street, complement, neighborhood, city, state (UF) and ibgeCode. Some CEPs have no street-level information, so street, complement and neighborhood can be empty.
+
+The default adapter calls the [ViaCEP JSON service](https://viacep.com.br/) over HTTPS. This lookup requires outbound connectivity to that free external provider. Existing calculation and validation endpoints remain local.
+
+Invalid syntax returns 400 before contacting the provider. An unknown CEP returns 404. Provider HTTP failures, malformed data and mismatched postal codes return 502. Provider timeouts and a busy outbound lookup queue return 504. Error responses use Problem Details. Request cancellation propagates to the outbound call.
+
+Successful lookups are cached in process for one hour and missing CEPs for five minutes. The cache holds at most 1024 entries, is cleared on restart and is independent in each process. Failures are not cached. Cache misses share one outbound slot to reduce provider load, with a maximum five-second wait for that slot. The HTTP client has a five-second timeout, a 32 KiB response buffer limit and redirects disabled. No automatic retries are performed. This endpoint uses the existing API rate limit.
+
+Example request:
+
+```sh
+curl http://localhost:5146/api/v1/br/addresses/01001-000
+```
+
+Example response:
+
+```json
+{
+  "postalCode": "01001000",
+  "street": "Praça da Sé",
+  "complement": "lado ímpar",
+  "neighborhood": "Sé",
+  "city": "São Paulo",
+  "state": "SP",
+  "ibgeCode": "3550308"
+}
+```
