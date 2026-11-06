@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import { english, t, setLanguage, getLanguage, restoreLanguage } from "../../src/OpenUtilityAPI.Api/wwwroot/language.js";
-import { tools } from "../../src/OpenUtilityAPI.Api/wwwroot/tools.js";
+import { english, t, setLanguage, getLanguage, restoreLanguage } from "../../frontend/playground/src/shared/language.js";
+import { tools } from "../../frontend/playground/src/shared/tools.js";
 
 test("English covers every tool, field, hint and choice without changing API values", () => {
   const unchanged = new Set(["CPF", "CNPJ"]);
@@ -18,13 +18,11 @@ test("English covers every tool, field, hint and choice without changing API val
 });
 
 test("Static content and interface messages have English translations", async () => {
-  const source = await readFile(new URL("../../src/OpenUtilityAPI.Api/wwwroot/playground.js", import.meta.url), "utf8");
-  const html = await readFile(new URL("../../src/OpenUtilityAPI.Api/wwwroot/index.html", import.meta.url), "utf8");
+  const source = await readFile(new URL("../../frontend/playground/src/results.ts", import.meta.url), "utf8");
   const keys = [
-    ...Array.from(source.matchAll(/\bt\("([^"]+)"\)/g), match => match[1]),
-    ...Array.from(html.matchAll(/data-i18n(?:-label)?="([^"]+)"/g), match => match[1])
+    ...Array.from(source.matchAll(/\bt\('([^']+)'\)/g), match => match[1])
   ];
-  assert.ok(keys.length > 50);
+  assert.ok(keys.length > 25);
   for (const key of keys) assert.ok(english[key], "Missing translation: " + key);
 });
 

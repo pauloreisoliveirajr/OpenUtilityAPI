@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { tools } from "../../src/OpenUtilityAPI.Api/wwwroot/tools.js";
-import { buildRequest } from "../../src/OpenUtilityAPI.Api/wwwroot/requests.js";
+import { tools } from "../../frontend/playground/src/shared/tools.js";
+import { buildRequest } from "../../frontend/playground/src/shared/requests.js";
 
 test("All 22 tools build requests and the original 15 remain POST operations", () => {
   assert.equal(tools.length, 22);

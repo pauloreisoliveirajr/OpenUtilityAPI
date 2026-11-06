@@ -6,9 +6,11 @@ A OpenUtilityAPI é uma API REST gratuita e auto-hospedável em .NET 10. A vers�
 
 ## Execução local
 
-Clone o repositório e abra um terminal na raiz. Instale o SDK .NET 10 e execute:
+Clone o repositório e abra um terminal na raiz. Instale o SDK .NET 10, Node.js 24 e pnpm 11.25.0 (`npm install --global pnpm@11.25.0`) e execute:
 
 ```sh
+pnpm --dir frontend/playground install --frozen-lockfile
+pnpm --dir frontend/playground build
 dotnet restore
 dotnet build -c Release --no-restore
 dotnet test -c Release --no-build
@@ -21,7 +23,7 @@ Abra o [Swagger UI](http://localhost:5146/swagger) ou confira o [status da API](
 
 ### Visual Studio 2026
 
-Instale a carga de trabalho **ASP.NET and web development** e o SDK .NET 10. Abra `OpenUtilityAPI.sln`, defina `OpenUtilityAPI.Api` como projeto de inicialização, selecione o perfil `https` e pressione **F5**. O Swagger abre em `https://localhost:7146/swagger`. Se necessário, execute `dotnet dev-certs https --trust` e aceite a confirmação de confiança no certificado.
+Instale a carga de trabalho **ASP.NET and web development** e o SDK .NET 10. Compile o frontend com os comandos acima antes de executar a solução e sempre que alterar a interface. Abra `OpenUtilityAPI.sln`, defina `OpenUtilityAPI.Api` como projeto de inicialização, selecione o perfil `https` e pressione **F5**. A página fica em `https://localhost:7146/` e o Swagger em `https://localhost:7146/swagger`. Se necessário, execute `dotnet dev-certs https --trust` e aceite a confirmação de confiança no certificado.
 
 ## Como usar a página web
 
@@ -34,10 +36,12 @@ Inicie a API e abra o endereço correspondente à forma de execução.
 | Docker com a porta 8080 mapeada | [http://localhost:8080/](http://localhost:8080/) |
 
 1. Escolha **Português** ou **English** no cabeçalho. A preferência fica salva no navegador.
-2. Selecione uma das 22 ferramentas no catálogo.
+2. Selecione uma das 22 ferramentas no catálogo, usando a busca ou as categorias. No celular, abra o menu do cabeçalho.
 3. Ajuste os valores do formulário ou selecione **Usar exemplo** para restaurar os dados de demonstração.
 4. Selecione **Executar chamada** para visualizar o resultado formatado e o status HTTP.
-5. Expanda **Ver requisição e resposta JSON** para consultar os dados enviados e recebidos pela API.
+5. Expanda **Detalhes da chamada** para consultar os dados enviados e recebidos pela API. Tabelas longas têm paginação; o JSON mantém a resposta completa.
+
+A interface usa React, TypeScript e Material UI, servidos pelo próprio .NET. Consulte o [guia do frontend](docs/frontend.md) para desenvolvimento e testes. O Docker compila a interface automaticamente e não exige Node.js no ambiente de execução.
 
 A troca de idioma preserva os valores preenchidos e a resposta atual. O idioma do número por extenso é escolhido separadamente no formulário. Use dados de exemplo ao testar documentos pessoais. As chamadas seguem os limites de uso da API.
 

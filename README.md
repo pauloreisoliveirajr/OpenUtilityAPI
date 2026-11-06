@@ -6,9 +6,11 @@ OpenUtilityAPI is a free, self-hosted .NET 10 REST API. Version 0.2.0 offers 15 
 
 ## Run locally
 
-Clone the repository and open a terminal at its root. Install the .NET 10 SDK, then run:
+Clone the repository and open a terminal at its root. Install the .NET 10 SDK, Node.js 24 and pnpm 11.25.0 (`npm install --global pnpm@11.25.0`), then run:
 
 ```sh
+pnpm --dir frontend/playground install --frozen-lockfile
+pnpm --dir frontend/playground build
 dotnet restore
 dotnet build -c Release --no-restore
 dotnet test -c Release --no-build
@@ -21,7 +23,7 @@ Open [Swagger UI](http://localhost:5146/swagger) or check [service health](http:
 
 ### Visual Studio 2026
 
-Install the **ASP.NET and web development** workload and the .NET 10 SDK. Open `OpenUtilityAPI.sln`, set `OpenUtilityAPI.Api` as the startup project, choose the `https` profile and press **F5**. Swagger opens at `https://localhost:7146/swagger`. If needed, run `dotnet dev-certs https --trust` and accept the trust prompt.
+Install the **ASP.NET and web development** workload and the .NET 10 SDK. Build the frontend with the commands above before running the solution and whenever the interface changes. Open `OpenUtilityAPI.sln`, set `OpenUtilityAPI.Api` as the startup project, choose the `https` profile and press **F5**. The page opens at `https://localhost:7146/` and Swagger at `https://localhost:7146/swagger`. If needed, run `dotnet dev-certs https --trust` and accept the trust prompt.
 
 ## Using the web page
 
@@ -34,10 +36,12 @@ Start the API and open the URL matching your launch method.
 | Docker with port 8080 mapped | [http://localhost:8080/](http://localhost:8080/) |
 
 1. Choose **Português** or **English** in the header. Your preference is saved in the browser.
-2. Select one of the 22 tools from the catalog.
+2. Select one of the 22 tools using the catalog search or categories. On mobile, open the header menu.
 3. Adjust the form values or select **Use example** to restore the sample.
 4. Select **Send request** to see the formatted result and HTTP status.
-5. Expand **View request and response JSON** to inspect the API payloads.
+5. Expand **Request details** to inspect the API payloads. Long tables are paginated; JSON retains the complete response.
+
+The interface uses React, TypeScript and Material UI, served by .NET itself. See the [frontend guide](docs/frontend.md) for development and tests. Docker builds the frontend automatically and does not require Node.js at runtime.
 
 Switching languages preserves the form values and the current response. The number-to-words output language is selected separately in its form. Use sample data when testing personal documents. Requests use the API's existing rate limits.
 

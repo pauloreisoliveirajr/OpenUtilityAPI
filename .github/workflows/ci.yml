@@ -10,13 +10,27 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
-      - run: dotnet restore
-      - run: dotnet build --configuration Release --no-restore
-      - run: dotnet test --configuration Release --no-build
       - uses: actions/setup-node@v4
         with:
           node-version: 24
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.25.0
+      - name: Build and test React playground
+        working-directory: frontend/playground
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm test
+          pnpm build
+      - run: dotnet restore
+      - run: dotnet build --configuration Release --no-restore
+      - run: dotnet test --configuration Release --no-build
       - run: node --test tests/OpenUtilityAPI.WebTests/*.test.mjs
+      - name: Verify all tools in Chromium
+        working-directory: frontend/playground
+        run: |
+          pnpm exec playwright install --with-deps chromium
+          pnpm test:e2e
       - name: Build local NuGet packages
         run: |
           dotnet pack src/OpenUtilityAPI.Core -c Release --no-build -o artifacts/packages
@@ -31,9 +45,12 @@ jobs:
           curl --fail --retry 20 --retry-delay 1 --retry-all-errors --max-time 5 http://localhost:8080/health
           curl --fail http://localhost:8080/ > /tmp/playground.html
           grep -q '<html lang="pt-BR">' /tmp/playground.html
-          for asset in playground.js tools.js requests.js language.js playground.css; do
-            curl --fail --output /dev/null "http://localhost:8080/$asset"
-          done
+          grep -q 'id="root"' /tmp/playground.html
+          python3 -c 'from html.parser import HTMLParser; p=HTMLParser(); p.handle_starttag=lambda tag, attrs: [print(v) for k,v in attrs if (tag,k) in [("script","src"),("link","href")] and v.startswith("/assets/")]; p.feed(open("/tmp/playground.html").read())' > /tmp/playground-assets.txt
+          test -s /tmp/playground-assets.txt
+          while IFS= read -r asset; do
+            curl --fail --output /dev/null "http://localhost:8080$asset"
+          done < /tmp/playground-assets.txt
           test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/swagger/index.html)" = 404
           curl --fail -H 'Content-Type: application/json' \
             --data '{"principal":1000,"ratePerPeriod":0.01,"periods":12}' \

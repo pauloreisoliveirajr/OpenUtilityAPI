@@ -255,4 +255,4 @@ export function restoreLanguage() {
   catch { language = "pt-BR"; }
 }
 
-export function t(text) { return language === "en-US" ? english[text] ?? text : text; }
+export function t(text, locale = language) { return locale === "en-US" ? english[text] ?? text : text; }

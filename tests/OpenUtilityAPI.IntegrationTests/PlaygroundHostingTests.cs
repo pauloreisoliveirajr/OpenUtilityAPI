@@ -1,6 +1,7 @@
 using System.Net;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using System.Text.RegularExpressions;
 
 namespace OpenUtilityAPI.IntegrationTests;
 
@@ -19,8 +20,14 @@ public sealed class PlaygroundHostingTests
         using var page = await client.GetAsync("/");
         Assert.Equal(HttpStatusCode.OK, page.StatusCode);
         Assert.Equal("text/html", page.Content.Headers.ContentType?.MediaType);
-        Assert.Contains("lang=\"pt-BR\"", await page.Content.ReadAsStringAsync());
-        foreach (var asset in new[] { "/playground.js", "/tools.js", "/requests.js", "/language.js", "/playground.css" })
+        var html = await page.Content.ReadAsStringAsync();
+        Assert.Contains("lang=\"pt-BR\"", html);
+        Assert.Contains("id=\"root\"", html);
+        var assets = Regex.Matches(html, "(?:src|href)=\"(/assets/[^\"]+)\"")
+            .Select(match => match.Groups[1].Value).Distinct().ToArray();
+        Assert.Contains(assets, asset => asset.EndsWith(".js", StringComparison.Ordinal));
+        Assert.Contains(assets, asset => asset.EndsWith(".css", StringComparison.Ordinal));
+        foreach (var asset in assets)
         {
             using var response = await client.GetAsync(asset);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);

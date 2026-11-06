@@ -482,3 +482,7 @@ $RECYCLE.BIN/
 *.swp
 /.sdk/
 /artifacts/
+/frontend/playground/node_modules/
+/frontend/playground/test-results/
+/frontend/playground/playwright-report/
+/src/OpenUtilityAPI.Api/wwwroot/
