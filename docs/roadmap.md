@@ -1,10 +1,10 @@
 # Roadmap
 
-The 0.1.0 and 0.2.0 contracts are defined in the [API contracts](api-contracts.md). Version 0.2.0 is in release preparation with seven public data routes and a bilingual playground for all 22 tools. Later milestones are proposals.
+The 0.1.0 and 0.2.0 contracts are defined in the [API contracts](api-contracts.md). [Version 0.2.0](https://github.com/pauloreisoliveirajr/OpenUtilityAPI/releases/tag/v0.2.0) was published on November 6, 2026, with seven public data routes and a bilingual playground for all 22 tools. Milestones from 0.3 onward are proposals.
 
 | Milestone | Candidate scope |
 | --- | --- |
-| 0.2 | Public CEP, IBGE, bank and indicator lookups with replaceable adapters and caching |
+| 0.2 (released) | Public CEP, IBGE, bank and indicator lookups with replaceable adapters and caching |
 | 0.3 | Brazilian labor calculations with versioned tables and regulatory references |
 | 0.4 | Boleto validation and non-sensitive Pix utilities |
 | 0.5 | PDF and file utilities with size limits and isolation |
