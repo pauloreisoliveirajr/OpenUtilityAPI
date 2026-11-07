@@ -1,6 +1,6 @@
 # OpenUtilityAPI
 
-A OpenUtilityAPI é uma API REST gratuita e auto-hospedável em .NET 10. A versão 0.2.0 oferece 15 utilidades locais e sete consultas de dados públicos. Core e Brazil também podem ser usados diretamente no .NET. Cálculos e validações são locais. As consultas de CEP, localidades, bancos e observações de indicadores precisam de acesso HTTPS ao ViaCEP, IBGE, BrasilAPI e BCB SGS, respectivamente. As consultas dispensam credenciais.
+A OpenUtilityAPI é uma API REST gratuita e auto-hospedável em .NET 10. A versão 0.2.1 oferece 15 utilidades locais e sete consultas de dados públicos. Core e Brazil também podem ser usados diretamente no .NET. Cálculos e validações são locais. As consultas de CEP, localidades, bancos e observações de indicadores precisam de acesso HTTPS ao ViaCEP, IBGE, BrasilAPI e BCB SGS, respectivamente. As consultas dispensam credenciais.
 
 [English](README.md) · [Contratos da API](docs/api-contracts.md) · [Arquitetura](docs/architecture.md) · [Roadmap](docs/roadmap.md)
 
@@ -73,8 +73,8 @@ Os exemplos recebem a URL base como primeiro argumento. A URL padrão é `http:/
 ## Docker
 
 ```sh
-docker build -t openutilityapi:0.2.0 .
-docker run --rm -p 127.0.0.1:8080:8080 openutilityapi:0.2.0
+docker build -t openutilityapi:0.2.1 .
+docker run --rm -p 127.0.0.1:8080:8080 openutilityapi:0.2.1
 ```
 
 Abra a [página web de demonstração](http://localhost:8080/). O ambiente padrão do contêiner é `Production`. Para habilitar o Swagger em desenvolvimento local ou HML, adicione `-e ASPNETCORE_ENVIRONMENT=Development` ou `-e ASPNETCORE_ENVIRONMENT=Homologation` antes do nome da imagem no comando de execução. O Swagger fica acessível em `/swagger`. A rota `/health` verifica o status da API.
@@ -92,6 +92,6 @@ dotnet pack src/OpenUtilityAPI.Core -c Release -o artifacts/packages
 dotnet pack src/OpenUtilityAPI.Brazil -c Release -o artifacts/packages
 ```
 
-Adicione `artifacts/packages` como origem local do NuGet e referencie `OpenUtilityAPI.Core` ou `OpenUtilityAPI.Brazil` na versão `0.2.0`. Por exemplo, `OpenUtilityAPI.Core.Finance.Interest(1000m, 0.01m, 12, 2, true)` calcula juros compostos diretamente em .NET.
+Adicione `artifacts/packages` como origem local do NuGet e referencie `OpenUtilityAPI.Core` ou `OpenUtilityAPI.Brazil` na versão `0.2.1`. Por exemplo, `OpenUtilityAPI.Core.Finance.Interest(1000m, 0.01m, 12, 2, true)` calcula juros compostos diretamente em .NET.
 
 [Contribuição](CONTRIBUTING.md) · [Segurança](SECURITY.md) · [Histórico](CHANGELOG.md) · [Licença MIT](LICENSE)

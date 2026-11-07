@@ -1,6 +1,6 @@
 # OpenUtilityAPI
 
-OpenUtilityAPI is a free, self-hosted .NET 10 REST API. Version 0.2.0 offers 15 local utilities and seven public data lookups. Core and Brazil can also be used directly from .NET. Calculations and validations run locally. CEP, locality, bank and indicator observations require outbound HTTPS access to ViaCEP, IBGE, BrasilAPI and BCB SGS, respectively. No credentials are required.
+OpenUtilityAPI is a free, self-hosted .NET 10 REST API. Version 0.2.1 offers 15 local utilities and seven public data lookups. Core and Brazil can also be used directly from .NET. Calculations and validations run locally. CEP, locality, bank and indicator observations require outbound HTTPS access to ViaCEP, IBGE, BrasilAPI and BCB SGS, respectively. No credentials are required.
 
 [Português](README.pt-BR.md) · [API contracts](docs/api-contracts.md) · [Architecture](docs/architecture.md) · [Roadmap](docs/roadmap.md)
 
@@ -77,8 +77,8 @@ The examples accept the base URL as their first argument and use `http://localho
 ## Docker
 
 ```sh
-docker build -t openutilityapi:0.2.0 .
-docker run --rm -p 127.0.0.1:8080:8080 openutilityapi:0.2.0
+docker build -t openutilityapi:0.2.1 .
+docker run --rm -p 127.0.0.1:8080:8080 openutilityapi:0.2.1
 ```
 
 Open the [web playground](http://localhost:8080/). The default container environment is `Production`. To enable Swagger for local development or HML, add `-e ASPNETCORE_ENVIRONMENT=Development` or `-e ASPNETCORE_ENVIRONMENT=Homologation` before the image name in the run command. Swagger is then available at `/swagger`. Health is available at `/health`.
@@ -96,6 +96,6 @@ dotnet pack src/OpenUtilityAPI.Core -c Release -o artifacts/packages
 dotnet pack src/OpenUtilityAPI.Brazil -c Release -o artifacts/packages
 ```
 
-Add `artifacts/packages` as a local NuGet source and reference `OpenUtilityAPI.Core` or `OpenUtilityAPI.Brazil` at version `0.2.0`. For example, `OpenUtilityAPI.Core.Finance.Interest(1000m, 0.01m, 12, 2, true)` returns a compound interest result without HTTP.
+Add `artifacts/packages` as a local NuGet source and reference `OpenUtilityAPI.Core` or `OpenUtilityAPI.Brazil` at version `0.2.1`. For example, `OpenUtilityAPI.Core.Finance.Interest(1000m, 0.01m, 12, 2, true)` returns a compound interest result without HTTP.
 
 [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [Changelog](CHANGELOG.md) · [MIT license](LICENSE)
