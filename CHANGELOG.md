@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.1
+
+- Migrated all 22 playground tools to React, TypeScript and Material UI while preserving the existing API contracts.
+- Added searchable category navigation, shareable tool URLs, a mobile menu and paginated result tables.
+- Preserved Portuguese and English, form values and results when switching languages, and the independent number-to-words output culture.
+- Distinguished missing records from unavailable API routes, and retained validation, timeout, provider and rate-limit feedback.
+- Added frontend unit tests and Chromium coverage for all tools in both languages, mobile navigation, pagination and request cancellation.
+- Updated the production Docker build to compile frontend assets separately; the runtime remains ASP.NET Core 10 without Node.js.
+- Documented the Node.js 24 and pnpm 11.25.0 build prerequisites for local development and Visual Studio 2026.
+
 ## 0.2.0
 
 - Added a local economic indicator catalog and BCB SGS observations for Selic target, daily CDI and monthly IPCA, with reference dates, explicit units and bounded caching.
